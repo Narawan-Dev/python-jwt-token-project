@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 import jwt
 import datetime
@@ -12,7 +13,6 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -25,8 +25,8 @@ class DecodeData(BaseModel):
     token: str
 
 @app.get("/")
-def read_root():
-    return {"message": "JWT Encode/Decode API is running 🚀"}
+def get_index():
+    return FileResponse("index.html")
 
 @app.post("/encode")
 def encode_token(data: EncodeData):
