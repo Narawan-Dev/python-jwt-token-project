@@ -20,6 +20,7 @@ app.add_middleware(
 class EncodeData(BaseModel):
     payload: dict
     secret: str
+    algorithm: str = "HS256"
 
 class DecodeData(BaseModel):
     token: str
@@ -30,9 +31,12 @@ def get_index():
 
 @app.post("/encode")
 def encode_token(data: EncodeData):
-    payload = data.payload.copy()
-    token = jwt.encode(payload, data.secret, algorithm="HS256")
-    return {"token": token}
+    try:
+        payload = data.payload.copy()
+        token = jwt.encode(payload, data.secret, algorithm=data.algorithm)
+        return {"token": token}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/decode")
 def decode_no_verify(data: DecodeData):

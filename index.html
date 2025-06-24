@@ -34,7 +34,8 @@
       margin: 12px 0 6px;
     }
     textarea,
-    input[type="text"] {
+    input[type="text"],
+    select {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
@@ -116,6 +117,13 @@
     <label for="encodeSecret">Secret Key:</label>
     <input id="encodeSecret" type="text" value="my_secret_123" />
 
+    <label for="algorithm">Algorithm:</label>
+    <select id="algorithm">
+      <option value="HS256">HS256</option>
+      <option value="HS384">HS384</option>
+      <option value="HS512">HS512</option>
+    </select>
+
     <label for="payload">Payload (JSON):</label>
     <textarea id="payload" rows="5">{ "user": "test" }</textarea>
 
@@ -152,6 +160,7 @@
     async function encode() {
       const secret = document.getElementById('encodeSecret').value;
       const payloadText = document.getElementById('payload').value;
+      const algorithm = document.getElementById('algorithm').value;
 
       let payload;
       try {
@@ -161,10 +170,10 @@
         return;
       }
 
-      const res = await fetch('http://localhost:8000/encode', {
+      const res = await fetch('/encode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payload, secret })
+        body: JSON.stringify({ payload, secret, algorithm })
       });
 
       const data = await res.json();
@@ -174,7 +183,7 @@
 
     async function decode() {
       const token = document.getElementById('token').value.trim();
-      const res = await fetch('http://localhost:8000/decode', {
+      const res = await fetch('/decode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
